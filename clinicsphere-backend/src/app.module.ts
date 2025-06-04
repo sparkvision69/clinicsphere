@@ -1,3 +1,4 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,12 +10,17 @@ import { UsersModule } from './users/users.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/clinicshere'),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async () => ({
+        uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/clinicshere',
+      }),
+    }),
     AuthModule,
     UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],        // ✅ Include AppService here
-  exports: [AppService],          // ✅ Then you can export it
+  providers: [AppService],
+  exports: [AppService],
 })
 export class AppModule {}

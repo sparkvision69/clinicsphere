@@ -1,7 +1,8 @@
+// src/users/user.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-export type UserDocument = User & Document;
+export type UserDocument = User & Document & { _id: Types.ObjectId };
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -9,19 +10,37 @@ export enum UserRole {
   PATIENT = 'patient',
 }
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
+  @Prop({ required: true })
+  name: string;
+
   @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true })
-  name: string;
-
-  @Prop({ enum: UserRole, default: UserRole.PATIENT })
+  @Prop({ required: true, enum: UserRole })
   role: UserRole;
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  doctorId?: Types.ObjectId;
+
+  @Prop()
+  phone?: string;
+
+  @Prop()
+  address?: string;
+
+  @Prop()
+  resetPasswordToken?: string;
+
+  @Prop()
+  resetPasswordExpires?: Date;
+
+  @Prop([{ action: String, timestamp: Date }])
+  activityLog?: { action: string; timestamp: Date }[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
