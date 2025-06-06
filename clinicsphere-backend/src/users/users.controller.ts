@@ -81,4 +81,15 @@ export class UsersController {
   async deleteUser(@Req() req:any, @Param('id') id: string) {
     return this.usersService.deleteUser(req.user, id);
   }
+
+  @Get('profile')
+  async getProfile(@Req() req: any) {
+    const userId = req.user.id;
+    console.log('getProfile', userId); // Debug log
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+    return user;
+  }
 }
