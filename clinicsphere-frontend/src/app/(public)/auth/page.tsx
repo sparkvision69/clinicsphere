@@ -1,9 +1,10 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUserMd, FaUserInjured, FaLock, FaEnvelope, FaUser, FaSignInAlt, FaUserPlus, FaHospital, FaHeartbeat, FaStethoscope } from 'react-icons/fa';
 import Image from 'next/image';
 import { useAuth } from '@/app/lib/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const AuthPage = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -14,14 +15,37 @@ const AuthPage = () => {
         confirmPassword: '',
         name: '',
     });
+    const router = useRouter();
 
-    const { login, register, loading, error } = useAuth(); 
+    const { login, register, loading, error, user } = useAuth();
     const handleChange = (e: any) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async (e:any) => {
+    useEffect(() => {
+        console.log('User:', user); // Debug user object
+        if (user && user.role) {
+            console.log('Redirecting to role:', user.role);
+            switch (user.role.toLowerCase()) {
+                case 'admin':
+                    router.push('/dashboard/admin');
+                    break;
+                case 'doctor':
+                    router.push('/dashboard/doctor');
+                    break;
+                case 'patient':
+                    router.push('/dashboard/patient');
+                    break;
+                default:
+                    console.log('Unknown role, redirecting to /dashboard');
+                    router.push('/dashboard');
+            }
+        }
+    }, [user, router]);
+
+    const handleSubmit = async (e: any) => {
+        
         e.preventDefault();
         if (isLogin) {
             try {
@@ -34,7 +58,7 @@ const AuthPage = () => {
             }
             try {
                 await register(formData.name, formData.email, formData.password, isDoctorSignup ? 'doctor' : 'patient');
-              
+
             } catch (err) {
             }
         }
@@ -42,7 +66,7 @@ const AuthPage = () => {
 
     const toggleForm = () => {
         setIsLogin(!isLogin);
-        setFormData({ email: '', password: '', confirmPassword: '', name: '' }); 
+        setFormData({ email: '', password: '', confirmPassword: '', name: '' });
     };
 
     const toggleSignupType = (isDoctor: boolean) => {

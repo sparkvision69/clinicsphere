@@ -1,3 +1,4 @@
+// api.ts
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export type LoginPayload = {
@@ -13,44 +14,61 @@ export type RegisterPayload = {
 };
 
 export async function login(payload: LoginPayload) {
-  const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
 
-  if (!res.ok) {
-    throw new Error('Login failed');
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Login failed');
+    }
+    const data = await res.json();
+    return data // Returns { access_token, user: { id, name, email, role } }
+  } catch (error: any) {
+    throw new Error(error.message || 'Network error during login');
   }
-  return res.json();
 }
 
 export async function register(payload: RegisterPayload) {
-  const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
 
-  if (!res.ok) {
-    throw new Error('Registration failed');
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Registration failed');
+    }
+    return res.json(); // Returns { access_token, user: { id, name, email, role } }
+  } catch (error: any) {
+    throw new Error(error.message || 'Network error during registration');
   }
-  return res.json();
 }
 
-export async function fetchUserProfile(token: string, userId: string) {
-  const res = await fetch(`${API_BASE_URL}/api/profile/${userId}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
+export async function fetchUserProfile(token: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/users/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch user profile');
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'Failed to fetch user profile');
+    }
+    return res.json(); // Returns { id, name, email, role }
+  } catch (error: any) {
+    throw new Error(error.message || 'Network error during profile fetch');
   }
-  return res.json();
 }
