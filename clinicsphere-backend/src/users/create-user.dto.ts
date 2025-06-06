@@ -1,40 +1,22 @@
-import { IsString, IsEmail, IsEnum, IsOptional, MinLength } from 'class-validator';
+// create-user.dto.ts
+import { IsString, IsEmail, IsEnum, IsOptional, IsNumber, MinLength } from 'class-validator';
 import { UserRole } from './user.schema';
 
-export class UpdateUserDto {
-  @IsOptional()
+
+export class CreateUserDto {
   @IsString()
-  @MinLength(2)
-  name?: string;
+  name: string;
 
-  @IsOptional()
   @IsEmail()
-  email?: string;
+  email: string;
 
-  @IsOptional()
   @IsString()
   @MinLength(8)
-  password?: string;
+  password: string;
 
-  @IsOptional()
-  @IsString()
-  phone?: string;
-
-  @IsOptional()
-  @IsString()
-  address?: string;
-
-  @IsOptional()
-  @IsString()
-  doctorId?: string;
-
-  @IsOptional()
   @IsEnum(UserRole)
-<<<<<<< Updated upstream
-  role?: UserRole;
-}
-=======
   role: UserRole;
+
   
   @IsOptional()
   @IsString()
@@ -65,4 +47,3 @@ export class UpdateUserDto {
   @IsOptional()
   bio?: string;
 }
->>>>>>> Stashed changes
