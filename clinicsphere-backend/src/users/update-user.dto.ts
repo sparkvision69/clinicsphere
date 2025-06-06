@@ -30,39 +30,5 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsEnum(UserRole)
-<<<<<<< Updated upstream
   role?: UserRole;
 }
-=======
-  role: UserRole;
-  
-  @IsOptional()
-  @IsString()
-  specialization?: string;
-
-  @IsOptional()
-  @IsString()
-  licenseNumber?: string;
-
-  @IsOptional()
-  @IsNumber()
-  experienceYears?: number;
-
-  @IsOptional()
-  @IsNumber()
-  appointmentFee?: number;
-
-  @IsOptional()
-  @IsNumber()
-  consultationDuration?: number;
-
-  @IsOptional()
-  clinicAddress?: string;
-
-  @IsOptional()
-  phoneNumber?: string;
-
-  @IsOptional()
-  bio?: string;
-}
->>>>>>> Stashed changes
