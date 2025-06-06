@@ -1,4 +1,3 @@
-// src/users/users.service.ts
 import { Injectable, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -30,8 +29,7 @@ export class UsersService {
   async validateUser(email: string, password: string): Promise<UserDocument | null> {
     
   const user = await this.findByEmail(email);
-
-  // Defensive checks
+  
   if (!user || !password || !user.password) {
     return null;
   }
