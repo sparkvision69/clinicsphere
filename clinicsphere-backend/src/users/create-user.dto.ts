@@ -16,8 +16,7 @@ export class CreateUserDto {
 
   @IsEnum(UserRole)
   role: UserRole;
-
-  // Doctor-specific optional fields
+  
   @IsOptional()
   @IsString()
   specialization?: string;
