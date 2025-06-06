@@ -4,14 +4,14 @@ import { Model, Types } from 'mongoose';
 import { User, UserDocument, UserRole } from './user.schema';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { CreateUserDto,  } from './reate-user.dto';
+import { CreateUserDto, } from './reate-user.dto';
 import { UpdateUserDto } from './update-user.dto';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
   async findById(id: string): Promise<UserDocument> {
     if (!Types.ObjectId.isValid(id)) {
@@ -22,22 +22,26 @@ export class UsersService {
     return user;
   }
 
+  async getUserById(id: string): Promise<UserDocument> {
+    return this.findById(id);
+  }
+
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
 
   async validateUser(email: string, password: string): Promise<UserDocument | null> {
-    
-  const user = await this.findByEmail(email);
-  
-  if (!user || !password || !user.password) {
-    return null;
-  }
-  console.log(email, password, user.password);
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  return isMatch ? user : null;
-}
+    const user = await this.findByEmail(email);
+    
+    if (!user || !password || !user.password) {
+      return null;
+    }
+    console.log(email, password, user.password);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    return isMatch ? user : null;
+  }
 
 
   async getAllUsers(page = 1, limit = 10, role?: UserRole) {
@@ -72,7 +76,7 @@ export class UsersService {
     const hashedPassword = await bcrypt.hash(data.password, 12);
     const createdUser = new this.userModel({
       ...data,
-      passwordHash: hashedPassword,
+      password: hashedPassword,
       activityLog: [{ action: 'User created', timestamp: new Date() }],
     });
     const savedUser = await createdUser.save();
@@ -84,9 +88,8 @@ export class UsersService {
     const user = await this.findById(userIdToUpdate);
     const updateFields = { ...updateData };
 
-    if (updateData.password) {
+    if (updateData && updateData.password) {
       updateFields.password = await bcrypt.hash(updateData.password, 12);
-      delete updateFields.password;
     }
 
     if (currentUser.role === UserRole.ADMIN) {
@@ -174,4 +177,6 @@ export class UsersService {
     this.logger.log(`Password reset for user: ${user.email}`);
     return { message: 'Password reset successfully' };
   }
+
+
 }

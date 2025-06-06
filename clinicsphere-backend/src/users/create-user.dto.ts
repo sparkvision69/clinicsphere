@@ -3,7 +3,7 @@ import { IsString, IsEmail, IsEnum, IsOptional, IsNumber, MinLength } from 'clas
 import { UserRole } from './user.schema';
 
 
-export class UpdateUserDto {
+export class CreateUserDto {
   @IsString()
   name: string;
 
@@ -12,7 +12,7 @@ export class UpdateUserDto {
 
   @IsString()
   @MinLength(8)
-  password?: string;
+  password: string;
 
   @IsEnum(UserRole)
   role: UserRole;
